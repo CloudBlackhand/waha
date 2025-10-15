@@ -897,9 +897,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return true;
   }
 
-  protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
+  protected async setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.setProfilePicture(file);
+    try {
+      const media = await this.prepareMedia(file);
+      await this.whatsapp.setProfilePicture(media);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   protected deleteProfilePicture(): Promise<boolean> {
@@ -980,7 +986,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   sendImage(request: MessageImageRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, request.image, {
+    return this.whatsapp.sendMessage(request.chatId, request.file, {
       caption: request.caption
     });
   }
@@ -994,14 +1000,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   sendVoice(request: MessageVoiceRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, request.voice, {
+    return this.whatsapp.sendMessage(request.chatId, request.file, {
       sendAudioAsVoice: true
     });
   }
 
   sendButtonsReply(request: MessageButtonReply) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, `Resposta do botão: ${request.buttonId}`);
+    return this.whatsapp.sendMessage(request.chatId, `Resposta do botão: ${request.selectedButtonId}`);
   }
 
   async sendLocation(request: MessageLocationRequest) {
@@ -1514,20 +1520,35 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   /**
+   * Helper methods
+   */
+  private async prepareMedia(file: BinaryFile | RemoteFile): Promise<any> {
+    if ('url' in file) {
+      // RemoteFile
+      return { url: file.url };
+    } else {
+      // BinaryFile
+      return { data: file.data, mimetype: file.mimetype };
+    }
+  }
+
+  /**
    * Channels methods
    */
-  public searchChannelsByView(
+  public async searchChannelsByView(
     query: ChannelSearchByView,
   ): Promise<ChannelListResult> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.searchChannelsByView(query);
+    // Método não disponível na versão atual do whatsapp-web.js
+    throw new Error('searchChannelsByView não está disponível na versão atual');
   }
 
-  public searchChannelsByText(
+  public async searchChannelsByText(
     query: ChannelSearchByText,
   ): Promise<ChannelListResult> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.searchChannelsByText(query);
+    // Método não disponível na versão atual do whatsapp-web.js
+    throw new Error('searchChannelsByText não está disponível na versão atual');
   }
 
   public async previewChannelMessages(
@@ -1535,7 +1556,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     query: PreviewChannelMessages,
   ): Promise<ChannelMessage[]> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.previewChannelMessages(inviteCode, query);
+    // Método não disponível na versão atual do whatsapp-web.js
+    throw new Error('previewChannelMessages não está disponível na versão atual');
   }
 
   protected ChatToChannel(chat: WEBJSChannel): Channel {

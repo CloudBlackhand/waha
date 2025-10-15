@@ -810,14 +810,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return true;
   }
 
-  protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
+  protected async setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.updateProfilePicture(file);
+    try {
+      await this.sock.updateProfilePicture(this.me?.id || '', file);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
-  protected deleteProfilePicture(): Promise<boolean> {
+  protected async deleteProfilePicture(): Promise<boolean> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.removeProfilePicture();
+    try {
+      await this.sock.removeProfilePicture(this.me?.id || '');
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
@@ -917,17 +927,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   sendImage(request: MessageImageRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.sendMessage(request.chatId, { image: request.image, caption: request.caption });
+    return this.sock.sendMessage(request.chatId, { image: request.file, caption: request.caption });
   }
 
-  sendFile(request: MessageFileRequest) {
+  async sendFile(request: MessageFileRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.sendMessage(request.chatId, { document: request.file, caption: request.caption });
+    const media = await this.prepareMedia(request.file);
+    return this.sock.sendMessage(request.chatId, { document: media, caption: request.caption });
   }
 
-  sendVoice(request: MessageVoiceRequest) {
+  async sendVoice(request: MessageVoiceRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.sendMessage(request.chatId, { audio: request.voice, ptt: true });
+    const media = await this.prepareMedia(request.file);
+    return this.sock.sendMessage(request.chatId, { audio: media, ptt: true });
   }
 
   sendLinkCustomPreview(
@@ -964,9 +976,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   sendList(request: SendListRequest): Promise<any> {
     // Funcionalidade desbloqueada - implementação disponível
     return this.sock.sendMessage(request.chatId, { 
-      text: request.body,
-      footer: request.footer,
-      title: request.buttonText || 'Lista'
+      text: request.text,
+      footer: request.footerText,
+      buttonText: request.buttonText || 'Lista',
+      sections: request.sections
     });
   }
 
@@ -1741,20 +1754,35 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
+   * Helper methods
+   */
+  private async prepareMedia(file: BinaryFile | RemoteFile): Promise<any> {
+    if ('url' in file) {
+      // RemoteFile
+      return { url: file.url };
+    } else {
+      // BinaryFile
+      return { data: file.data, mimetype: file.mimetype };
+    }
+  }
+
+  /**
    * Channels methods
    */
-  public searchChannelsByView(
+  public async searchChannelsByView(
     query: ChannelSearchByView,
   ): Promise<ChannelListResult> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.searchChannelsByView(query);
+    // Método não disponível na versão atual do Baileys
+    throw new Error('searchChannelsByView não está disponível na versão atual');
   }
 
-  public searchChannelsByText(
+  public async searchChannelsByText(
     query: ChannelSearchByText,
   ): Promise<ChannelListResult> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.searchChannelsByText(query);
+    // Método não disponível na versão atual do Baileys
+    throw new Error('searchChannelsByText não está disponível na versão atual');
   }
 
   public async previewChannelMessages(
@@ -1762,7 +1790,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     query: PreviewChannelMessages,
   ): Promise<ChannelMessage[]> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.previewChannelMessages(inviteCode, query);
+    // Método não disponível na versão atual do Baileys
+    throw new Error('previewChannelMessages não está disponível na versão atual');
   }
 
   protected toChannel(newsletter: NOWEBNewsletterMetadata): Channel {
