@@ -98,7 +98,7 @@ export class NowebInMemoryStore implements INowebStore {
 
   getContactById(jid: string): Promise<Contact> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.store.contacts[jid] || null;
+    return Promise.resolve(this.store.contacts[jid] || null);
   }
 
   getLabels(): Promise<Label[]> {
