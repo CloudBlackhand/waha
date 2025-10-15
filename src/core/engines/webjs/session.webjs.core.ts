@@ -992,9 +992,10 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     });
   }
 
-  sendFile(request: MessageFileRequest) {
+  async sendFile(request: MessageFileRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, request.file, {
+    const media = await this.prepareMedia(request.file);
+    return this.whatsapp.sendMessage(request.chatId, media, {
       caption: request.caption
     });
   }

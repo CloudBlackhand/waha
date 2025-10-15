@@ -986,7 +986,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.sock.sendMessage(request.chatId, { 
       text: request.message.title,
       footer: request.message.footer || '',
-      buttonText: request.message.button,
+      title: request.message.button,
       sections: request.message.sections
     });
   }
