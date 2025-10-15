@@ -983,11 +983,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   sendList(request: SendListRequest): Promise<any> {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.sendMessage(request.chatId, { 
+    // Para o Baileys, vamos usar a estrutura de lista correta
+    const listMessage = {
       text: request.message.title,
       footer: request.message.footer || '',
-      sections: request.message.sections
-    });
+      sections: request.message.sections,
+      buttonText: request.message.button
+    };
+    return this.sock.sendMessage(request.chatId, listMessage as any);
   }
 
   async sendLocation(request: MessageLocationRequest) {
