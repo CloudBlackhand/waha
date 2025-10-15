@@ -961,8 +961,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     file: RemoteFile | BinaryFile,
     type,
   ): Promise<any> {
+    // Funcionalidade desbloqueada - implementação disponível
     if (file && ('url' in file || 'data' in file)) {
-      throw new AvailableInPlusVersion('Sending media (image, video, pdf)');
+      return await this.prepareMedia(file);
     }
     return;
   }
