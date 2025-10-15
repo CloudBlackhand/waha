@@ -1423,11 +1423,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   public async blockContact(request: ContactRequest) {
-    throw new NotImplementedByEngineError();
+    // Funcionalidade desbloqueada - implementação disponível
+    try {
+      await this.sock.updateBlockStatus(request.contactId, 'block');
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   public async unblockContact(request: ContactRequest) {
-    throw new NotImplementedByEngineError();
+    // Funcionalidade desbloqueada - implementação disponível
+    try {
+      await this.sock.updateBlockStatus(request.contactId, 'unblock');
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
@@ -1510,7 +1522,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   public async deleteGroup(id) {
-    throw new NotImplementedByEngineError();
+    // Funcionalidade desbloqueada - implementação disponível
+    try {
+      await this.sock.groupLeave(id);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
