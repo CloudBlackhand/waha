@@ -79,7 +79,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.enableCors();
+  app.enableCors({
+    origin: true, // Aceita qualquer origem (HTTP e HTTPS)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Api-Key', 'X-Requested-With'],
+    credentials: true,
+  });
   // Ideally, we should apply it globally.
   // but for now we added it ValidationPipe on Controller or endpoint level
   // app.useGlobalPipes(new ValidationPipe({ transform: true }));
