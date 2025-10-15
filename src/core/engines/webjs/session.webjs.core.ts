@@ -984,9 +984,10 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
+  async sendImage(request: MessageImageRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, request.file, {
+    const media = await this.prepareMedia(request.file);
+    return this.whatsapp.sendMessage(request.chatId, media, {
       caption: request.caption
     });
   }
@@ -998,16 +999,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     });
   }
 
-  sendVoice(request: MessageVoiceRequest) {
+  async sendVoice(request: MessageVoiceRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, request.file, {
+    const media = await this.prepareMedia(request.file);
+    return this.whatsapp.sendMessage(request.chatId, media, {
       sendAudioAsVoice: true
     });
   }
 
   sendButtonsReply(request: MessageButtonReply) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.whatsapp.sendMessage(request.chatId, `Resposta do botão: ${request.selectedButtonId}`);
+    return this.whatsapp.sendMessage(request.chatId, `Resposta do botão: ${request.selectedButtonID}`);
   }
 
   async sendLocation(request: MessageLocationRequest) {

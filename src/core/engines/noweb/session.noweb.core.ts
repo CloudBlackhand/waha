@@ -813,7 +813,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   protected async setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
     // Funcionalidade desbloqueada - implementação disponível
     try {
-      await this.sock.updateProfilePicture(this.me?.id || '', file);
+      const jid = this.sock?.authState?.creds?.me?.id || '';
+      const media = await this.prepareMedia(file);
+      await this.sock.updateProfilePicture(jid, media);
       return true;
     } catch (error) {
       return false;
@@ -823,7 +825,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   protected async deleteProfilePicture(): Promise<boolean> {
     // Funcionalidade desbloqueada - implementação disponível
     try {
-      await this.sock.removeProfilePicture(this.me?.id || '');
+      const jid = this.sock?.authState?.creds?.me?.id || '';
+      await this.sock.removeProfilePicture(jid);
       return true;
     } catch (error) {
       return false;
@@ -925,15 +928,20 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return await this.sock.sendMessage(request.chatId, message, options);
   }
 
-  sendImage(request: MessageImageRequest) {
+  async sendImage(request: MessageImageRequest) {
     // Funcionalidade desbloqueada - implementação disponível
-    return this.sock.sendMessage(request.chatId, { image: request.file, caption: request.caption });
+    const media = await this.prepareMedia(request.file);
+    return this.sock.sendMessage(request.chatId, { image: media, caption: request.caption });
   }
 
   async sendFile(request: MessageFileRequest) {
     // Funcionalidade desbloqueada - implementação disponível
     const media = await this.prepareMedia(request.file);
-    return this.sock.sendMessage(request.chatId, { document: media, caption: request.caption });
+    return this.sock.sendMessage(request.chatId, { 
+      document: media, 
+      caption: request.caption,
+      mimetype: media.mimetype || 'application/octet-stream'
+    });
   }
 
   async sendVoice(request: MessageVoiceRequest) {
@@ -976,10 +984,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   sendList(request: SendListRequest): Promise<any> {
     // Funcionalidade desbloqueada - implementação disponível
     return this.sock.sendMessage(request.chatId, { 
-      text: request.text,
-      footer: request.footerText,
-      buttonText: request.buttonText || 'Lista',
-      sections: request.sections
+      text: request.message.title,
+      footer: request.message.footer || '',
+      buttonText: request.message.button,
+      sections: request.message.sections
     });
   }
 
