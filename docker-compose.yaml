@@ -30,6 +30,9 @@ services:
       # https://waha.devlike.pro/docs/how-to/storages/#save-media-files-between-the-container-restarts
       - './media:/app/.media'
 
+      # Store configuration for persistent storage
+      - './store:/app/.store'
+
     env_file:
       - .env
 
